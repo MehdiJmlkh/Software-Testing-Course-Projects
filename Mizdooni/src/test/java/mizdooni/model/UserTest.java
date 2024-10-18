@@ -87,4 +87,24 @@ public class UserTest {
         user.addReservation(reservation);
         assertEquals(user.getReservation(reservation.getReservationNumber()), reservation);
     }
+
+    @Test
+    public void check_reserved_for_a_non_reserved_restaurant_returns_false() {
+        assertFalse(user.checkReserved(create_sample_restaurant()));
+    }
+
+    @Test
+    public void check_reserved_for_a_cancelled_reservation_returns_false() {
+        Reservation reservation = create_sample_reservation();
+        user.addReservation(reservation);
+        reservation.cancel();
+        assertFalse(user.checkReserved(reservation.getRestaurant()));
+    }
+
+    @Test
+    public void check_reserved_for_a_reserved_restaurant_returns_true() {
+        Reservation reservation = create_sample_reservation();
+        user.addReservation(reservation);
+        assertTrue(user.checkReserved(reservation.getRestaurant()));
+    }
 }
