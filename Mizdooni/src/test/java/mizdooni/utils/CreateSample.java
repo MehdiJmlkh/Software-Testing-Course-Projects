@@ -40,4 +40,13 @@ public class CreateSample {
         Table table = create_sample_table();
         return new Reservation(user, restaurant, table, LocalDateTime.now());
     }
+
+    public static Rating create_sample_rating() {
+        return new Rating();
+    }
+
+    public static Review create_sample_review(User user) {
+        Rating rating = create_sample_rating();
+        return new Review(user, rating, "comment", LocalDateTime.now());
+    }
 }
