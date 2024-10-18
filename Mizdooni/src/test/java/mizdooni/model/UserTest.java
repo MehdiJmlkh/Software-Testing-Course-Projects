@@ -67,4 +67,24 @@ public class UserTest {
         user.addReservation(reservation2);
         assertEquals(1, reservation2.getReservationNumber() - reservation1.getReservationNumber());
     }
+
+    @Test
+    public void get_non_existent_reservation_returns_null() {
+        assertNull(user.getReservation(1));
+    }
+
+    @Test
+    public void get_cancelled_reservation_returns_null() {
+        Reservation reservation = create_sample_reservation();
+        user.addReservation(reservation);
+        reservation.cancel();
+        assertNull(user.getReservation(reservation.getReservationNumber()));
+    }
+
+    @Test
+    public void get_existent_reservation_returns_reservation() {
+        Reservation reservation = create_sample_reservation();
+        user.addReservation(reservation);
+        assertEquals(user.getReservation(reservation.getReservationNumber()), reservation);
+    }
 }
