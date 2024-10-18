@@ -3,10 +3,7 @@ package mizdooni.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-
-import static mizdooni.utils.SampleUtils.*;
+import static mizdooni.utils.CreateSample.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTest {

@@ -1,6 +1,6 @@
 package mizdooni.model;
 
-import static mizdooni.utils.SampleUtils.*;
+import static mizdooni.utils.CreateSample.*;
 
 public class RestaurantTest {
     private Restaurant restaurant;

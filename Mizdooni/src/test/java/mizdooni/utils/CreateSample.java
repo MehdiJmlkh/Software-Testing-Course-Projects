@@ -5,7 +5,7 @@ import mizdooni.model.*;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-public class SampleUtils {
+public class CreateSample {
 
     public static Address create_sample_address() {
         return new Address("country", "city", "street");

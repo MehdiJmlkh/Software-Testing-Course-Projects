@@ -3,10 +3,9 @@ package mizdooni.model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static mizdooni.utils.SampleUtils.*;
+import static mizdooni.utils.CreateSample.*;
 import static org.junit.jupiter.api.Assertions.*;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class TableTest {
     private Table table;
