@@ -2,9 +2,21 @@ package mizdooni.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
 import static mizdooni.utils.CreateSample.*;
+import static mizdooni.utils.CreateSample.create_sample_table;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class RestaurantTest {
     private Restaurant restaurant;
@@ -62,5 +74,77 @@ public class RestaurantTest {
         restaurant.addReview(review2);
         assertEquals(1, restaurant.getReviews().size());
         assertEquals(review2, restaurant.getReviews().getFirst());
+    }
+
+    @Test
+    public void get_average_rating_of_empty_list_of_reviews_return_zero() {
+        Rating average = restaurant.getAverageRating();
+        assertEquals(0, average.food);
+        assertEquals(0, average.service);
+        assertEquals(0, average.ambiance);
+        assertEquals(0, average.overall);
+    }
+
+    @ParameterizedTest
+    @MethodSource("rating_provider")
+    public void get_average_rating_give_the_correct_result(List<List<Double>> rates, List<Double> expected) {
+        for(List<Double> rate : rates) {
+            Rating rating = new Rating();
+            rating.food = rate.get(0);
+            rating.service = rate.get(1);
+            rating.ambiance = rate.get(2);
+            rating.overall = rate.get(3);
+
+            restaurant.addReview(create_sample_review(rating));
+        }
+        Rating average = restaurant.getAverageRating();
+        assertEquals(expected.get(0), average.food);
+        assertEquals(expected.get(1), average.service);
+        assertEquals(expected.get(2), average.ambiance);
+        assertEquals(expected.get(3), average.overall);
+    }
+
+    public static Stream<Arguments> rating_provider() {
+        return Stream.of(
+                arguments(List.of(
+                        Arrays.asList(1., 2., 3., 4.),
+                        Arrays.asList(1., 2., 3., 4.),
+                        Arrays.asList(1., 2., 3., 4.)
+                        ),
+                Arrays.asList(1., 2., 3., 4.)
+                ),
+                arguments(List.of(
+                                Arrays.asList(0., 2., 3., 4.1),
+                                Arrays.asList(0., 5.5, 3.5, 4.5)
+                        ),
+                        Arrays.asList(0., 3.75, 3.25, 4.3)
+                ),
+                arguments(List.of(
+                                Arrays.asList(1., 0., 3.3, 4.)
+                        ),
+                        Arrays.asList(1., 0., 3.3, 4.)
+                )
+        );
+    }
+
+    @Test
+    public void get_max_seat_number_of_empty_list_of_tables_returns_one() {
+        assertEquals(1, restaurant.getMaxSeatsNumber());
+    }
+
+    @ParameterizedTest
+    @MethodSource("seat_number_provider")
+    public void get_max_seat_number_of_non_empty_list_of_tables_works(List<Integer> seatNumbers, int expected) {
+
+        seatNumbers.forEach(n -> restaurant.addTable(create_sample_table(n)));
+        assertEquals(expected, restaurant.getMaxSeatsNumber());
+    }
+
+    public static Stream<Arguments> seat_number_provider() {
+        return Stream.of(
+                arguments(List.of(1, 2, 3, 3, 5), 5),
+                arguments(List.of(1, 10, 9), 10),
+                arguments(List.of(5), 5)
+        );
     }
 }

@@ -34,6 +34,10 @@ public class CreateSample {
         return new Table(0, 0, 0);
     }
 
+    public static Table create_sample_table(int seatsNumber) {
+        return new Table(0, 0, seatsNumber);
+    }
+
     public static Reservation create_sample_reservation() {
         User user = create_sample_user();
         Restaurant restaurant = create_sample_restaurant();
@@ -48,5 +52,9 @@ public class CreateSample {
     public static Review create_sample_review(User user) {
         Rating rating = create_sample_rating();
         return new Review(user, rating, "comment", LocalDateTime.now());
+    }
+
+    public static Review create_sample_review(Rating rating) {
+        return new Review(create_sample_user(), rating, "comment", LocalDateTime.now());
     }
 }
