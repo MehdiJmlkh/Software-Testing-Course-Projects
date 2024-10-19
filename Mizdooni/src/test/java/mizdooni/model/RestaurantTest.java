@@ -2,13 +2,10 @@ package mizdooni.model;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
@@ -135,7 +132,6 @@ public class RestaurantTest {
     @ParameterizedTest
     @MethodSource("seat_number_provider")
     public void get_max_seat_number_of_non_empty_list_of_tables_works(List<Integer> seatNumbers, int expected) {
-
         seatNumbers.forEach(n -> restaurant.addTable(create_sample_table(n)));
         assertEquals(expected, restaurant.getMaxSeatsNumber());
     }
