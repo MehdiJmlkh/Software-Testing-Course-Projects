@@ -57,4 +57,5 @@ public class CreateSample {
     public static Review create_sample_review(Rating rating) {
         return new Review(create_sample_user(), rating, "comment", LocalDateTime.now());
     }
+
 }
