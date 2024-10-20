@@ -125,8 +125,8 @@ public class RestaurantTest {
     }
 
     @Test
-    public void get_max_seat_number_of_empty_list_of_tables_returns_one() {
-        assertEquals(1, restaurant.getMaxSeatsNumber());
+    public void get_max_seat_number_of_empty_list_of_tables_returns_zero() {
+        assertEquals(0, restaurant.getMaxSeatsNumber());
     }
 
     @ParameterizedTest
