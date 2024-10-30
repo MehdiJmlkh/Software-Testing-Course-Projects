@@ -38,6 +38,8 @@ public class Response {
         return new Response(HttpStatus.OK, message, true, null, data);
     }
 
+    public HttpStatus getStatus() {return status;}
+
     public String getMessage() {return message;}
 
     public Object getData() {return  data;}

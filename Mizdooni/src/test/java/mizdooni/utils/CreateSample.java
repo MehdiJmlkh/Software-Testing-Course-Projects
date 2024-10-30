@@ -1,5 +1,6 @@
 package mizdooni.utils;
 
+import mizdooni.exceptions.UserNotFound;
 import mizdooni.model.*;
 import mizdooni.response.PagedList;
 
@@ -8,6 +9,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class CreateSample {
 
@@ -78,5 +80,15 @@ public class CreateSample {
     public static int createSampleId() {
         return 1;
     }
+
+    public static String createSampleComment() {
+        return "comment";
+    }
+
+    public static Map<String, Number> createSampleRatingMap() {
+        return Map.of("food", 1, "service", 2, "ambiance", 3, "overall", 4);
+    }
+
+    public static UserNotFound createSampleUserNotFoundException() {return new UserNotFound();}
 
 }
