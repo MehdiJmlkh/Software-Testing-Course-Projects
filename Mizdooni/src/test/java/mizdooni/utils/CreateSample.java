@@ -1,5 +1,6 @@
 package mizdooni.utils;
 
+import mizdooni.exceptions.BadPeopleNumber;
 import mizdooni.exceptions.UserNotFound;
 import mizdooni.exceptions.UserNotManager;
 import mizdooni.model.*;
@@ -7,12 +8,8 @@ import mizdooni.response.PagedList;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import static mizdooni.controllers.ControllerUtils.*;
 
 public class CreateSample {
 
@@ -76,7 +73,7 @@ public class CreateSample {
         return new PagedList<>(reviews, 1, 1);
     }
 
-    public static int createSamplePageNumber() {
+    public static int createSamplePositiveNumber() {
         return 1;
     }
 
@@ -110,5 +107,13 @@ public class CreateSample {
 
     public static int createSampleTableNumber() {
         return 1;
+    }
+
+    public static  List<LocalTime> createSampleListOfLocalTime() {
+        return List.of(LocalTime.now());
+    }
+
+    public static BadPeopleNumber createSampleBadPeopleNumberException() {
+        return new BadPeopleNumber();
     }
 }

@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -137,5 +139,56 @@ public class ReservationControllerTest {
         assertEquals(exception.getMessage(), result.getMessage());
         assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
         assertEquals(exception.getClass().getSimpleName(), result.getError());
+    }
+
+    @Test
+    public void getAvailableTimes_ValidArgs_ReturnsOkResponse() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
+        Restaurant restaurant = create_sample_restaurant();
+        int people = createSamplePositiveNumber();
+        String date = createSampleDate();
+        List<LocalTime> localTimes = createSampleListOfLocalTime();
+
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        when(reserveService.getAvailableTimes(restaurant.getId(), people, LocalDate.parse(date, DATE_FORMATTER))).thenReturn(localTimes);
+
+        Response result = reservationController.getAvailableTimes(restaurant.getId(), people, date);
+
+        assertEquals(HttpStatus.OK, result.getStatus());
+        assertEquals("available times", result.getMessage());
+        assertEquals(localTimes, result.getData());
+    }
+
+    @Test
+    public void getAvailableTimes_BadFormattedDate_ThrowsException() {
+        Restaurant restaurant = create_sample_restaurant();
+        int people = createSamplePositiveNumber();
+        String date = createSampleBadFormattedDate();
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            reservationController.getAvailableTimes(restaurant.getId(), people, date);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, result.getMessage());
+    }
+
+    @Test
+    public void getAvailableTimes_ReserveServiceThrowsException_ThrowsException() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
+        Restaurant restaurant = create_sample_restaurant();
+        int people = createSamplePositiveNumber();
+        String date = createSampleDate();
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        BadPeopleNumber exception = createSampleBadPeopleNumberException();
+        doThrow(exception).when(reserveService).getAvailableTimes(restaurant.getId(), people, LocalDate.parse(date, DATE_FORMATTER));
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            reservationController.getAvailableTimes(restaurant.getId(), people, date);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(exception.getMessage(), result.getMessage());
+        assertEquals(exception.getClass().getSimpleName(), result.getError());
+
     }
 }

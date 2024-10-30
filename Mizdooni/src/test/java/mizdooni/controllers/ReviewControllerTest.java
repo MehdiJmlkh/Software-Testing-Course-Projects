@@ -63,7 +63,7 @@ public class ReviewControllerTest {
         when(restaurantService.getRestaurant(anyInt())).thenThrow(responseException);
 
         ResponseException result = assertThrows(ResponseException.class, () -> {
-            reviewController.getReviews(createSampleId(), createSamplePageNumber());
+            reviewController.getReviews(createSampleId(), createSamplePositiveNumber());
         });
 
         assertEquals(result.getMessage(), responseException.getMessage());
