@@ -1,15 +1,18 @@
 package mizdooni.utils;
 
 import mizdooni.exceptions.UserNotFound;
+import mizdooni.exceptions.UserNotManager;
 import mizdooni.model.*;
 import mizdooni.response.PagedList;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import static mizdooni.controllers.ControllerUtils.*;
 
 public class CreateSample {
 
@@ -91,4 +94,21 @@ public class CreateSample {
 
     public static UserNotFound createSampleUserNotFoundException() {return new UserNotFound();}
 
+    public static UserNotManager createSampleUserNotManagerException() {return new UserNotManager();}
+
+    public static List<Reservation> createSampleListOfReservation() {
+        return List.of(create_sample_reservation());
+    }
+
+    public static String createSampleDate() {
+        return "2024-01-01";
+    }
+
+    public static String createSampleBadFormattedDate() {
+        return "2024,01,01";
+    }
+
+    public static int createSampleTableNumber() {
+        return 1;
+    }
 }
