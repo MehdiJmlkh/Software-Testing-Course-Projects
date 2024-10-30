@@ -6,10 +6,13 @@ import mizdooni.exceptions.UserNotManager;
 import mizdooni.model.*;
 import mizdooni.response.PagedList;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+
+import mizdooni.controllers.ControllerUtils;
 
 public class CreateSample {
 
@@ -105,6 +108,14 @@ public class CreateSample {
         return "2024,01,01";
     }
 
+    public static String createSampleDatetime() {
+        return "2024-01-01 00:01";
+    }
+
+    public static String createSampleBadFormattedDatetime() {
+        return "2024,01,01-00:01";
+    }
+
     public static int createSampleTableNumber() {
         return 1;
     }
@@ -115,5 +126,17 @@ public class CreateSample {
 
     public static BadPeopleNumber createSampleBadPeopleNumberException() {
         return new BadPeopleNumber();
+    }
+
+    public static LocalDateTime createSampleLocalDateTime() {
+        return LocalDateTime.now();
+    }
+
+    public static Reservation createSampleReservation() {
+        return new Reservation(create_sample_user(),create_sample_restaurant(), create_sample_table(), createSampleLocalDateTime());
+    }
+
+    public static double createSampleDoubleNumber() {
+        return 4.7;
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
@@ -191,4 +192,91 @@ public class ReservationControllerTest {
         assertEquals(exception.getClass().getSimpleName(), result.getError());
 
     }
+
+    @Test
+    public void addReservation_ValidArgs_ReturnsOkResponse() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes, ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
+        Restaurant restaurant = create_sample_restaurant();
+        int people = createSamplePositiveNumber();
+        String datetime = createSampleDatetime();
+        Map<String, String> params = Map.of("people", Integer.toString(people), "datetime", datetime);
+        Reservation reservation = createSampleReservation();
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        when(reserveService.reserveTable(restaurant.getId(), people, LocalDateTime.parse(datetime, DATETIME_FORMATTER)))
+                .thenReturn(reservation);
+
+        Response result = reservationController.addReservation(restaurant.getId(), params);
+
+        assertEquals(HttpStatus.OK, result.getStatus());
+        assertEquals(reservation, result.getData());
+        assertEquals("reservation done", result.getMessage());
+    }
+
+    @Test
+    public void addReservation_ParamsMissing_ThrowsException() {
+        Restaurant restaurant = create_sample_restaurant();
+        int people = createSamplePositiveNumber();
+        Map<String, String> params = Map.of("people", Integer.toString(people));
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            reservationController.addReservation(restaurant.getId(), params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void addReservation_PeopleNotInteger_ThrowsException() {
+        Restaurant restaurant = create_sample_restaurant();
+        double people = createSampleDoubleNumber();
+        String datetime = createSampleDatetime();
+        Map<String, String> params = Map.of("people", Double.toString(people), "datetime", datetime);
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            reservationController.addReservation(restaurant.getId(), params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, result.getMessage());
+    }
+
+    @Test
+    public void addReservation_BadFormattedDatetime_ThrowsException() {
+        Restaurant restaurant = create_sample_restaurant();
+        int people = createSamplePositiveNumber();
+        String datetime = createSampleBadFormattedDatetime();
+        Map<String, String> params = Map.of("people", Integer.toString(people), "datetime", datetime);
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            reservationController.addReservation(restaurant.getId(), params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, result.getMessage());
+    }
+
+    @Test
+    public void addReservation_ReserveServiceThrowsException_ThrowsException() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes, ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
+        Restaurant restaurant = create_sample_restaurant();
+        int people = createSamplePositiveNumber();
+        String datetime = createSampleDatetime();
+        Map<String, String> params = Map.of("people", Integer.toString(people), "datetime", datetime);
+        UserNotFound exception = createSampleUserNotFoundException();
+
+        when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
+        doThrow(exception).when(reserveService).reserveTable(restaurant.getId(), people,  LocalDateTime.parse(datetime, DATETIME_FORMATTER));
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            reservationController.addReservation(restaurant.getId(), params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(exception.getMessage(), result.getMessage());
+        assertEquals(exception.getClass().getSimpleName(), result.getError());
+    }
+
+
 }
