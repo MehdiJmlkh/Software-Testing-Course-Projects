@@ -278,5 +278,38 @@ public class ReservationControllerTest {
         assertEquals(exception.getClass().getSimpleName(), result.getError());
     }
 
+    @Test
+    public void cancelReservation_ValidArgs_CallsCancelReservationMethodOfReserveService() throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
+        int reservationNumber = createSamplePositiveNumber();
 
+
+        Response result = reservationController.cancelReservation(reservationNumber);
+        verify(reserveService).cancelReservation(eq(reservationNumber));
+    }
+
+    @Test
+    public void cancelReservation_ValidArgs_ReturnsOkResponse() throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
+        int reservationNumber = createSamplePositiveNumber();
+
+        Response result = reservationController.cancelReservation(reservationNumber);
+
+        assertEquals(HttpStatus.OK, result.getStatus());
+        assertEquals("reservation cancelled", result.getMessage());
+    }
+
+    @Test
+    public void cancelReservation_ReserveServiceThrowsException_ThrowsException() throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
+        int reservationNumber = createSamplePositiveNumber();
+        UserNotFound exception = createSampleUserNotFoundException();
+
+        doThrow(exception).when(reserveService).cancelReservation(reservationNumber);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            reservationController.cancelReservation(reservationNumber);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(exception.getMessage(), result.getMessage());
+        assertEquals(exception.getClass().getSimpleName(), result.getError());
+    }
 }
