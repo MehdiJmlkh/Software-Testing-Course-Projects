@@ -1,9 +1,13 @@
 package mizdooni.utils;
 
 import mizdooni.model.*;
+import mizdooni.response.PagedList;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class CreateSample {
 
@@ -56,6 +60,23 @@ public class CreateSample {
 
     public static Review create_sample_review(Rating rating) {
         return new Review(create_sample_user(), rating, "comment", LocalDateTime.now());
+    }
+
+    public static Review create_sample_review() {
+        return new Review(create_sample_user(), create_sample_rating(), "comment", LocalDateTime.now());
+    }
+
+    public static PagedList<Review> createSamplePageListOfReviews() {
+        List<Review> reviews = List.of(create_sample_review(), create_sample_review());
+        return new PagedList<>(reviews, 1, 1);
+    }
+
+    public static int createSamplePageNumber() {
+        return 1;
+    }
+
+    public static int createSampleId() {
+        return 1;
     }
 
 }
