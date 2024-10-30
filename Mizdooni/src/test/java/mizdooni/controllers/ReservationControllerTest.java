@@ -47,7 +47,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void getReservations_ValidArgs_ReturnsOkResponse() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
+    public void getRestaurantReservations_ValidArgs_ReturnsOkResponse() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         int table = createSampleTableNumber();
         String date = createSampleDate();
         Restaurant restaurant = create_sample_restaurant();
@@ -63,7 +63,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void getReservations_ReserveServiceThrowsException_ThrowsException() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
+    public void getRestaurantReservations_ReserveServiceThrowsException_ThrowsException() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         int table = createSampleTableNumber();
         String date = createSampleDate();
         Restaurant restaurant = create_sample_restaurant();
@@ -81,7 +81,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void getReservations_BadFormattedDate_ThrowsException() {
+    public void getRestaurantReservations_BadFormattedDate_ThrowsException() {
         int table = createSampleTableNumber();
         String date = createSampleBadFormattedDate();
         Restaurant restaurant = create_sample_restaurant();
@@ -96,7 +96,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void getReservations_NullDate_ReturnsOkResponse() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
+    public void getRestaurantReservations_NullDate_ReturnsOkResponse() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         int table = createSampleTableNumber();
         Restaurant restaurant = create_sample_restaurant();
         List<Reservation> reservations = createSampleListOfReservation();
@@ -108,5 +108,34 @@ public class ReservationControllerTest {
         assertEquals(HttpStatus.OK, result.getStatus());
         assertEquals("restaurant table reservations", result.getMessage());
         assertEquals(reservations, result.getData());
+    }
+
+    @Test
+    public void getCustomerReservations_ValidArgs_ReturnsOkResponse() throws UserNotFound, UserNoAccess {
+        int customerId = createSampleId();
+        List<Reservation> reservations = createSampleListOfReservation();
+        when(reserveService.getCustomerReservations(customerId)).thenReturn(reservations);
+
+        Response result = reservationController.getCustomerReservations(customerId);
+
+        assertEquals(HttpStatus.OK, result.getStatus());
+        assertEquals("user reservations", result.getMessage());
+        assertEquals(reservations, result.getData());
+    }
+
+    @Test
+    public void getCustomersReservations_ReserveServiceThrowsException_ThrowsException() throws UserNotFound, UserNoAccess {
+        int customerId = createSampleId();
+
+        UserNotFound exception = createSampleUserNotFoundException();
+        doThrow(exception).when(reserveService).getCustomerReservations(customerId);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+           reservationController.getCustomerReservations(customerId);
+        });
+
+        assertEquals(exception.getMessage(), result.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(exception.getClass().getSimpleName(), result.getError());
     }
 }
