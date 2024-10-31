@@ -133,4 +133,26 @@ public class CreateSample {
     public static String createSampleNonBlankString() {
         return "SampleString";
     }
+
+    public static String createSampleUsername() {
+        return "username";
+    }
+
+    public static String createSamplePassword() {
+        return "password";
+    }
+
+    public static String createSampleEmail() {
+        return "sample@email.com";
+    }
+
+    public static String createSampleRole() {
+        return "client";
+    }
+
+    public static Map<String, String> createSampleMapAddress() {
+        return Map.of("country", "country",
+                     "city","city",
+                     "street","street");
+    }
 }

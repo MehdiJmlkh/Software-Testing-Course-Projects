@@ -1,12 +1,11 @@
 package mizdooni.controllers;
 
+import mizdooni.model.Address;
 import mizdooni.model.User;
 import mizdooni.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 
 import static org.mockito.Mockito.when;
 import mizdooni.exceptions.*;
@@ -114,6 +113,55 @@ public class AuthenticationControllerTest {
         });
 
         ResponseException expected = new ResponseException(HttpStatus.UNAUTHORIZED, "invalid username or password");
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void signup_ValidArgs_CallsMethodOfUserServiceCorrectly() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
+        Map<String, String> mapAddress = createSampleMapAddress();
+        String password = createSamplePassword();
+        String username = createSampleUsername();
+        String email = createSampleEmail();
+        String role = createSampleRole();
+        Map<String, Object> params = Map.of("username", username,
+                                            "password", password,
+                                            "email", email,
+                                            "address", mapAddress,
+                                            "role", role);
+
+        authenticationController.signup(params);
+
+        InOrder inOrder = inOrder(userService);
+        inOrder.verify(userService).signup(eq(username), eq(password), eq(email),
+                argThat(address ->
+                        address.getCountry().equals(mapAddress.get("country")) &&
+                        address.getCity().equals(mapAddress.get("city")) &&
+                        address.getStreet().equals(mapAddress.get("street"))
+                ),
+                eq(User.Role.valueOf(role))
+        );
+        inOrder.verify(userService).login(eq(username), eq(password));
+    }
+
+    @Test
+    public void signup_ValidArgs_ReturnsOkResponse() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
+        Map<String, String> mapAddress = createSampleMapAddress();
+        String password = createSamplePassword();
+        String username = createSampleUsername();
+        String email = createSampleEmail();
+        String role = createSampleRole();
+        Map<String, Object> params = Map.of("username", username,
+                "password", password,
+                "email", email,
+                "address", mapAddress,
+                "role", role);
+
+        User user = createSampleUser();
+        when(userService.getCurrentUser()).thenReturn(user);
+
+        Response result = authenticationController.signup(params);
+
+        Response expected = Response.ok("signup successful", user);
         assertEquals(expected, result);
     }
 }
