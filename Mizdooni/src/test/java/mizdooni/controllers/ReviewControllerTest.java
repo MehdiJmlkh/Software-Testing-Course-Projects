@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import static mizdooni.controllers.ControllerUtils.PARAMS_BAD_TYPE;
 import static mizdooni.controllers.ControllerUtils.PARAMS_MISSING;
 import static mizdooni.utils.CreateSample.*;
+import static mizdooni.utils.CustomAssertions.*;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -66,8 +67,8 @@ public class ReviewControllerTest {
             reviewController.getReviews(createSampleId(), createSamplePositiveNumber());
         });
 
-        assertEquals(result.getMessage(), responseException.getMessage());
-        assertEquals(result.getStatus(), responseException.getStatus());
+
+        assertEquals(responseException, result);
     }
 
     @Test
@@ -81,8 +82,7 @@ public class ReviewControllerTest {
         });
 
         ResponseException expected = new ResponseException(HttpStatus.BAD_REQUEST, PARAMS_MISSING);
-        assertEquals(result.getMessage(), expected.getMessage());
-        assertEquals(result.getStatus(), expected.getStatus());
+        assertEquals(expected, result);
     }
 
     @Test
@@ -114,9 +114,9 @@ public class ReviewControllerTest {
         ResponseException result = assertThrows(ResponseException.class, () -> {
             reviewController.addReview(restaurant.getId(), params);
         });
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
-        assertEquals(exception.getMessage(), result.getMessage());
-        assertEquals(exception.getClass().getSimpleName(), result.getError());
+
+        ResponseException expected = new ResponseException(HttpStatus.BAD_REQUEST, exception);
+        assertEquals(expected, result);
     }
 
     @Test

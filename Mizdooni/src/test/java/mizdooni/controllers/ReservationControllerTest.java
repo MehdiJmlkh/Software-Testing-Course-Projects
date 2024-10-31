@@ -15,11 +15,13 @@ import org.junit.jupiter.api.Test;
 
 import static mizdooni.controllers.ControllerUtils.*;
 import static mizdooni.utils.CreateSample.*;
+import static mizdooni.utils.CustomAssertions.*;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
@@ -78,9 +80,9 @@ public class ReservationControllerTest {
             reservationController.getReservations(restaurant.getId(), table, date);
         });
 
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
-        assertEquals(exception.getMessage(), result.getMessage());
-        assertEquals(exception.getClass().getSimpleName(), result.getError());
+
+        ResponseException expected = new ResponseException(HttpStatus.BAD_REQUEST, exception);
+        assertEquals(expected, result);
     }
 
     @Test
@@ -187,10 +189,8 @@ public class ReservationControllerTest {
             reservationController.getAvailableTimes(restaurant.getId(), people, date);
         });
 
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
-        assertEquals(exception.getMessage(), result.getMessage());
-        assertEquals(exception.getClass().getSimpleName(), result.getError());
-
+        ResponseException expected = new ResponseException(HttpStatus.BAD_REQUEST, exception);
+        assertEquals(expected, result);
     }
 
     @Test
@@ -273,9 +273,8 @@ public class ReservationControllerTest {
             reservationController.addReservation(restaurant.getId(), params);
         });
 
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
-        assertEquals(exception.getMessage(), result.getMessage());
-        assertEquals(exception.getClass().getSimpleName(), result.getError());
+        ResponseException expected = new ResponseException(HttpStatus.BAD_REQUEST, exception);
+        assertEquals(expected, result);
     }
 
     @Test
@@ -308,8 +307,7 @@ public class ReservationControllerTest {
             reservationController.cancelReservation(reservationNumber);
         });
 
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
-        assertEquals(exception.getMessage(), result.getMessage());
-        assertEquals(exception.getClass().getSimpleName(), result.getError());
+        ResponseException expected = new ResponseException(HttpStatus.BAD_REQUEST, exception);
+        assertEquals(expected, result);
     }
 }
