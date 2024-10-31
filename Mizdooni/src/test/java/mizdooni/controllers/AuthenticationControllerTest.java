@@ -212,7 +212,7 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void validateUsername_UsernameIsInValid_ThrowsException() {
+    public void validateUsername_UsernameIsInvalid_ThrowsException() {
         String username = createSampleInvalidUsername();
 
         ResponseException result = assertThrows(ResponseException.class, () -> {
@@ -223,6 +223,41 @@ public class AuthenticationControllerTest {
         assertEquals("invalid username format", result.getMessage());
     }
 
+    @Test
+    public void validateEmail_EmailIsValidAndAvailable_ReturnsOkResponse() {
+        String email = createSampleEmail();
+        when(userService.emailExists(email)).thenReturn(false);
+
+        Response result = authenticationController.validateEmail(email);
+
+        assertEquals(HttpStatus.OK, result.getStatus());
+        assertEquals("email not registered", result.getMessage());
+    }
+
+    @Test
+    public void validateEmail_EmailIsValidAndNotAvailable_ThrowsException() {
+        String email = createSampleEmail();
+        when(userService.emailExists(any())).thenReturn(true);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.validateEmail(email);
+        });
+
+        assertEquals(HttpStatus.CONFLICT, result.getStatus());
+        assertEquals("email already registered", result.getMessage());
+    }
+
+    @Test
+    public void validateEmail_UsernameIsInvalid_ThrowsException() {
+        String email = createSampleInvalidEmail();
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.validateEmail(email);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals("invalid email format", result.getMessage());
+    }
 
 
 }

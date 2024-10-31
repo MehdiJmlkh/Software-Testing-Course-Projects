@@ -150,6 +150,10 @@ public class CreateSample {
         return "sample@email.com";
     }
 
+    public static String createSampleInvalidEmail() {
+        return "sampleInvalidEmail.com";
+    }
+
     public static String createSampleRole() {
         return "client";
     }
