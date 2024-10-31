@@ -129,4 +129,8 @@ public class CreateSample {
     public static double createSampleDoubleNumber() {
         return 4.7;
     }
+
+    public static String createSampleNonBlankString() {
+        return "SampleString";
+    }
 }

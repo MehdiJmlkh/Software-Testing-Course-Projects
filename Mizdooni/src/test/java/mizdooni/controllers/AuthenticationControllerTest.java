@@ -1,11 +1,42 @@
 package mizdooni.controllers;
 
+import mizdooni.model.User;
 import mizdooni.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import static org.mockito.Mockito.when;
+import mizdooni.exceptions.*;
+import mizdooni.model.Reservation;
+import mizdooni.model.Restaurant;
+import mizdooni.response.ResponseException;
+import mizdooni.service.ReservationService;
+import mizdooni.service.RestaurantService;
+import mizdooni.response.Response;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import static mizdooni.controllers.ControllerUtils.*;
+import static mizdooni.utils.CreateSample.*;
+import static mizdooni.utils.CustomAssertions.*;
+
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+import java.util.Map;
+
+import static org.mockito.Mockito.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AuthenticationControllerTest {
     @Mock
@@ -19,8 +50,70 @@ public class AuthenticationControllerTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    @Test
-    public void test() {
 
+    @Test
+    public void getUser_UserExists_ReturnsOkResponse() {
+        User user = createSampleUser();
+        when(userService.getCurrentUser()).thenReturn(user);
+
+        Response result = authenticationController.user();
+
+        assertEquals(HttpStatus.OK, result.getStatus());
+        assertEquals("current user", result.getMessage());
+        assertEquals(user, result.getData());
+    }
+
+    @Test
+    public void getUser_NoUser_ThrowsException() {
+        when(userService.getCurrentUser()).thenReturn(null);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.user();
+        });
+
+        ResponseException expected = new ResponseException(HttpStatus.UNAUTHORIZED, "no user logged in");
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void login_ValidArgs_ReturnsOkResponse() {
+        User user = createSampleUser();
+        Map<String, String> params = Map.of("username", createSampleNonBlankString(),
+                                            "password", createSampleNonBlankString());
+        when(userService.login(params.get("username"), params.get("password"))).thenReturn(true);
+        when(userService.getCurrentUser()).thenReturn(user);
+
+        Response result = authenticationController.login(params);
+
+        assertEquals(HttpStatus.OK, result.getStatus());
+        assertEquals("login successful", result.getMessage());
+        assertEquals(user, result.getData());
+    }
+
+    @Test
+    public void login_ParamsMissing_ThrowsException() {
+        Map<String, String> params = Map.of("password", createSampleNonBlankString());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.login(params);
+        });
+
+        ResponseException expected = new ResponseException(HttpStatus.BAD_REQUEST, PARAMS_MISSING);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void login_InvalidParams_ThrowsException() {
+        Map<String, String> params = Map.of("password", createSampleNonBlankString(),
+                                            "username", createSampleNonBlankString());
+
+        when(userService.login(any(), any())).thenReturn(false);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.login(params);
+        });
+
+        ResponseException expected = new ResponseException(HttpStatus.UNAUTHORIZED, "invalid username or password");
+        assertEquals(expected, result);
     }
 }
