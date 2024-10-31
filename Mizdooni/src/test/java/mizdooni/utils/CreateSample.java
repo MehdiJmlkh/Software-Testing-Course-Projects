@@ -138,6 +138,10 @@ public class CreateSample {
         return "username";
     }
 
+    public static String createSampleInvalidUsername() {
+        return "@Invalid Username";
+    }
+
     public static String createSamplePassword() {
         return "password";
     }

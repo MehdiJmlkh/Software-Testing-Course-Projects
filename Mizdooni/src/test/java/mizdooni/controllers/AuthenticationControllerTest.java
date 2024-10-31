@@ -186,4 +186,43 @@ public class AuthenticationControllerTest {
         assertEquals(HttpStatus.UNAUTHORIZED, result.getStatus());
         assertEquals("no user logged in", result.getMessage());
     }
+
+    @Test
+    public void validateUsername_UsernameIsValidAndAvailable_ReturnsOkResponse() {
+        String username = createSampleUsername();
+        when(userService.usernameExists(username)).thenReturn(false);
+
+        Response result = authenticationController.validateUsername(username);
+
+        assertEquals(HttpStatus.OK, result.getStatus());
+        assertEquals("username is available", result.getMessage());
+    }
+
+    @Test
+    public void validateUsername_UsernameIsValidAndNotAvailable_ThrowsException() {
+        String username = createSampleUsername();
+        when(userService.usernameExists(any())).thenReturn(true);
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.validateUsername(username);
+        });
+
+        assertEquals(HttpStatus.CONFLICT, result.getStatus());
+        assertEquals("username already exists", result.getMessage());
+    }
+
+    @Test
+    public void validateUsername_UsernameIsInValid_ThrowsException() {
+        String username = createSampleInvalidUsername();
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.validateUsername(username);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals("invalid username format", result.getMessage());
+    }
+
+
+
 }
