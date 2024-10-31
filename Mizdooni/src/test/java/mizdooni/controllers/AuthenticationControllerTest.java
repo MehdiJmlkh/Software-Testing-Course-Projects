@@ -164,4 +164,26 @@ public class AuthenticationControllerTest {
         Response expected = Response.ok("signup successful", user);
         assertEquals(expected, result);
     }
+
+    @Test
+    public void logout_LoggedInUser_ReturnsOkResponse() {
+        when(userService.logout()).thenReturn(true);
+
+        Response result = authenticationController.logout();
+
+        assertEquals(HttpStatus.OK, result.getStatus());
+        assertEquals("logout successful", result.getMessage());
+    }
+
+    @Test
+    public void logout_NonLoggedInUser_ThrowsException() {
+        when(userService.logout()).thenReturn(false);
+
+        ResponseException result =assertThrows(ResponseException.class, () -> {
+            authenticationController.logout();
+        });
+
+        assertEquals(HttpStatus.UNAUTHORIZED, result.getStatus());
+        assertEquals("no user logged in", result.getMessage());
+    }
 }
