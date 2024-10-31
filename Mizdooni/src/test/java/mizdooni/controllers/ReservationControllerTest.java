@@ -3,12 +3,9 @@ package mizdooni.controllers;
 import mizdooni.exceptions.*;
 import mizdooni.model.Reservation;
 import mizdooni.model.Restaurant;
-import mizdooni.model.Review;
-import mizdooni.response.PagedList;
 import mizdooni.response.ResponseException;
 import mizdooni.service.ReservationService;
 import mizdooni.service.RestaurantService;
-import mizdooni.service.ReviewService;
 import mizdooni.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,18 +17,14 @@ import static mizdooni.utils.CustomAssertions.*;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRange;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static mizdooni.utils.CreateSample.createSampleRatingMap;
 import static org.mockito.Mockito.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,7 +48,7 @@ public class ReservationControllerTest {
     public void getRestaurantReservations_ValidArgs_ReturnsOkResponse() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         int table = createSampleTableNumber();
         String date = createSampleDate();
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         List<Reservation> reservations = createSampleListOfReservation();
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         when(reserveService.getReservations(restaurant.getId(), table, LocalDate.parse(date, DATE_FORMATTER))).thenReturn(reservations);
@@ -71,7 +64,7 @@ public class ReservationControllerTest {
     public void getRestaurantReservations_ReserveServiceThrowsException_ThrowsException() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         int table = createSampleTableNumber();
         String date = createSampleDate();
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         UserNotManager exception = createSampleUserNotManagerException();
         doThrow(exception).when(reserveService).getReservations(restaurant.getId(), table, LocalDate.parse(date, DATE_FORMATTER));
@@ -89,7 +82,7 @@ public class ReservationControllerTest {
     public void getRestaurantReservations_BadFormattedDate_ThrowsException() {
         int table = createSampleTableNumber();
         String date = createSampleBadFormattedDate();
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
 
         ResponseException result = assertThrows(ResponseException.class, () -> {
@@ -103,7 +96,7 @@ public class ReservationControllerTest {
     @Test
     public void getRestaurantReservations_NullDate_ReturnsOkResponse() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         int table = createSampleTableNumber();
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         List<Reservation> reservations = createSampleListOfReservation();
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
         when(reserveService.getReservations(restaurant.getId(), table, null)).thenReturn(reservations);
@@ -146,7 +139,7 @@ public class ReservationControllerTest {
 
     @Test
     public void getAvailableTimes_ValidArgs_ReturnsOkResponse() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         int people = createSamplePositiveNumber();
         String date = createSampleDate();
         List<LocalTime> localTimes = createSampleListOfLocalTime();
@@ -163,7 +156,7 @@ public class ReservationControllerTest {
 
     @Test
     public void getAvailableTimes_BadFormattedDate_ThrowsException() {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         int people = createSamplePositiveNumber();
         String date = createSampleBadFormattedDate();
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
@@ -178,7 +171,7 @@ public class ReservationControllerTest {
 
     @Test
     public void getAvailableTimes_ReserveServiceThrowsException_ThrowsException() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         int people = createSamplePositiveNumber();
         String date = createSampleDate();
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
@@ -195,7 +188,7 @@ public class ReservationControllerTest {
 
     @Test
     public void addReservation_ValidArgs_ReturnsOkResponse() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes, ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         int people = createSamplePositiveNumber();
         String datetime = createSampleDatetime();
         Map<String, String> params = Map.of("people", Integer.toString(people), "datetime", datetime);
@@ -213,7 +206,7 @@ public class ReservationControllerTest {
 
     @Test
     public void addReservation_ParamsMissing_ThrowsException() {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         int people = createSamplePositiveNumber();
         Map<String, String> params = Map.of("people", Integer.toString(people));
         when(restaurantService.getRestaurant(restaurant.getId())).thenReturn(restaurant);
@@ -228,7 +221,7 @@ public class ReservationControllerTest {
 
     @Test
     public void addReservation_PeopleNotInteger_ThrowsException() {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         double people = createSampleDoubleNumber();
         String datetime = createSampleDatetime();
         Map<String, String> params = Map.of("people", Double.toString(people), "datetime", datetime);
@@ -244,7 +237,7 @@ public class ReservationControllerTest {
 
     @Test
     public void addReservation_BadFormattedDatetime_ThrowsException() {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         int people = createSamplePositiveNumber();
         String datetime = createSampleBadFormattedDatetime();
         Map<String, String> params = Map.of("people", Integer.toString(people), "datetime", datetime);
@@ -260,7 +253,7 @@ public class ReservationControllerTest {
 
     @Test
     public void addReservation_ReserveServiceThrowsException_ThrowsException() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes, ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         int people = createSamplePositiveNumber();
         String datetime = createSampleDatetime();
         Map<String, String> params = Map.of("people", Integer.toString(people), "datetime", datetime);

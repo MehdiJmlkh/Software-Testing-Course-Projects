@@ -45,7 +45,7 @@ public class ReviewControllerTest {
 
     @Test
     void getReviews_ValidRestaurantId_ReturnsReviews() throws RestaurantNotFound {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         PagedList<Review> reviews = createSamplePageListOfReviews();
 
         when(restaurantService.getRestaurant(anyInt())).thenReturn(restaurant);
@@ -73,7 +73,7 @@ public class ReviewControllerTest {
 
     @Test
     void addReview_ParamsMissing_ThrowsException() {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         when(restaurantService.getRestaurant(anyInt())).thenReturn(restaurant);
         Map<String, Object> params = Map.of("comment", createSampleComment());
 
@@ -87,7 +87,7 @@ public class ReviewControllerTest {
 
     @Test
     public void addReview_ParamsBadType_ThrowsException() {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         String comment = createSampleComment();
         Map<String, String> ratingMap =  Map.of("food", "", "service", "", "ambiance", "", "overall", "");
         Map<String, Object> params = Map.of("comment", comment,"rating", ratingMap);
@@ -102,7 +102,7 @@ public class ReviewControllerTest {
 
     @Test
     public void addReview_ReviewServiceThrowsException_ThrowsException() throws UserNotFound, ManagerCannotReview, UserHasNotReserved, RestaurantNotFound, InvalidReviewRating {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         String comment = createSampleComment();
         Map<String, Number> ratingMap = createSampleRatingMap();
         Map<String, Object> params = Map.of("comment", comment,"rating", ratingMap);
@@ -121,7 +121,7 @@ public class ReviewControllerTest {
 
     @Test
     public void addReview_ValidParams_addsReviews() throws UserNotFound, ManagerCannotReview, UserHasNotReserved, RestaurantNotFound, InvalidReviewRating {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         String comment = createSampleComment();
         Map<String, Number> ratingMap = createSampleRatingMap();
         Map<String, Object> params = Map.of("comment", comment,"rating", ratingMap);
@@ -139,7 +139,7 @@ public class ReviewControllerTest {
 
     @Test
     public void addReview_ValidParams_ReturnsCorrectResponse() {
-        Restaurant restaurant = create_sample_restaurant();
+        Restaurant restaurant = createSampleRestaurant();
         String comment = createSampleComment();
         Map<String, Number> ratingMap = createSampleRatingMap();
         Map<String, Object> params = Map.of("comment", comment,"rating", ratingMap);

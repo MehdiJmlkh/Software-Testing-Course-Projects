@@ -1,5 +1,6 @@
 package mizdooni.model;
 
+import mizdooni.utils.CreateSample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,12 +13,12 @@ public class TableTest {
 
     @BeforeEach
     public void setup() {
-        table = create_sample_table();
+        table = createSampleTable();
     }
 
     @Test
     public void add_new_reservation_added_to_the_reservations() {
-        Reservation reservation = create_sample_reservation();
+        Reservation reservation = CreateSample.createSampleReservation();
         table.addReservation(reservation);
         assertEquals(1, table.getReservations().size());
         assertEquals(reservation, table.getReservations().getFirst());
@@ -30,14 +31,14 @@ public class TableTest {
 
     @Test
     public void check_reserved_for_a_reserved_datetime_returns_true() {
-        Reservation reservation = create_sample_reservation();
+        Reservation reservation = CreateSample.createSampleReservation();
         table.addReservation(reservation);
         assertTrue(table.isReserved(reservation.getDateTime()));
     }
 
     @Test
     public void check_reserved_for_a_cancelled_datetime_returns_false() {
-        Reservation reservation = create_sample_reservation();
+        Reservation reservation = CreateSample.createSampleReservation();
         table.addReservation(reservation);
         reservation.cancel();
         assertFalse(table.isReserved(reservation.getDateTime()));

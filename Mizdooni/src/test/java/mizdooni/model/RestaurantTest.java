@@ -1,5 +1,6 @@
 package mizdooni.model;
 
+import mizdooni.utils.CreateSample;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import static mizdooni.utils.CreateSample.*;
-import static mizdooni.utils.CreateSample.create_sample_table;
+import static mizdooni.utils.CreateSample.createSampleTable;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
@@ -20,12 +21,12 @@ public class RestaurantTest {
 
     @BeforeEach
     public void setup() {
-        restaurant = create_sample_restaurant();
+        restaurant = createSampleRestaurant();
     }
 
     @Test
     public void add_new_table_added_to_the_tables(){
-        Table table = create_sample_table();
+        Table table = CreateSample.createSampleTable();
         restaurant.addTable(table);
         assertEquals(1, restaurant.getTables().size());
         assertEquals(table, restaurant.getTables().getFirst());
@@ -33,8 +34,8 @@ public class RestaurantTest {
 
     @Test
     public void add_new_table_increases_table_number(){
-        Table table1 = create_sample_table();
-        Table table2 = create_sample_table();
+        Table table1 = CreateSample.createSampleTable();
+        Table table2 = CreateSample.createSampleTable();
         restaurant.addTable(table1);
         restaurant.addTable(table2);
         assertEquals(1, table2.getTableNumber() - table1.getTableNumber());
@@ -42,21 +43,21 @@ public class RestaurantTest {
 
     @Test
     public void get_existent_table_returns_the_table() {
-        Table table = create_sample_table();
+        Table table = CreateSample.createSampleTable();
         restaurant.addTable(table);
         assertEquals(table, restaurant.getTable(table.getTableNumber()));
     }
 
     @Test
     public void get_non_existent_table_returns_null() {
-        Table table = create_sample_table();
+        Table table = CreateSample.createSampleTable();
         restaurant.addTable(table);
         assertNull(restaurant.getTable(table.getTableNumber() + 1));
     }
 
     @Test
     public void add_first_review_of_a_user_added_to_the_reviews(){
-        Review review = create_sample_review(create_sample_user());
+        Review review = createSampleReview(createSampleUser());
         restaurant.addReview(review);
         assertEquals(1, restaurant.getReviews().size());
         assertEquals(review, restaurant.getReviews().getFirst());
@@ -64,9 +65,9 @@ public class RestaurantTest {
 
     @Test
     public void add_second_review_of_a_user_delete_the_previous_one_from_reviews(){
-        User user = create_sample_user();
-        Review review1 = create_sample_review(user);
-        Review review2 = create_sample_review(user);
+        User user = createSampleUser();
+        Review review1 = createSampleReview(user);
+        Review review2 = createSampleReview(user);
         restaurant.addReview(review1);
         restaurant.addReview(review2);
         assertEquals(1, restaurant.getReviews().size());
@@ -92,7 +93,7 @@ public class RestaurantTest {
             rating.ambiance = rate.get(2);
             rating.overall = rate.get(3);
 
-            restaurant.addReview(create_sample_review(rating));
+            restaurant.addReview(createSampleReview(rating));
         }
         Rating average = restaurant.getAverageRating();
         assertEquals(expected.get(0), average.food);
@@ -132,7 +133,7 @@ public class RestaurantTest {
     @ParameterizedTest
     @MethodSource("seat_number_provider")
     public void get_max_seat_number_of_non_empty_list_of_tables_works(List<Integer> seatNumbers, int expected) {
-        seatNumbers.forEach(n -> restaurant.addTable(create_sample_table(n)));
+        seatNumbers.forEach(n -> restaurant.addTable(createSampleTable(n)));
         assertEquals(expected, restaurant.getMaxSeatsNumber());
     }
 
