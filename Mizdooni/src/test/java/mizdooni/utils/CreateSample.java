@@ -1,6 +1,7 @@
 package mizdooni.utils;
 
 import mizdooni.exceptions.BadPeopleNumber;
+import mizdooni.exceptions.DuplicatedUsernameEmail;
 import mizdooni.exceptions.UserNotFound;
 import mizdooni.exceptions.UserNotManager;
 import mizdooni.model.*;
@@ -162,5 +163,17 @@ public class CreateSample {
         return Map.of("country", "country",
                      "city","city",
                      "street","street");
+    }
+
+    public static String createSampleBlankString() {
+        return "   ";
+    }
+
+    public static String createSampleNotExistedRole() {
+        return "aNotExistedRole";
+    }
+
+    public static DuplicatedUsernameEmail createSampleDuplicatedUsernameEmailException() {
+        return new DuplicatedUsernameEmail();
     }
 }

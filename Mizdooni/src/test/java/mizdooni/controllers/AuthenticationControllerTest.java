@@ -1,22 +1,16 @@
 package mizdooni.controllers;
 
-import mizdooni.model.Address;
 import mizdooni.model.User;
 import mizdooni.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
 
+import static mizdooni.utils.CreateSample.createSampleEmail;
 import static org.mockito.Mockito.when;
 import mizdooni.exceptions.*;
-import mizdooni.model.Reservation;
-import mizdooni.model.Restaurant;
 import mizdooni.response.ResponseException;
-import mizdooni.service.ReservationService;
-import mizdooni.service.RestaurantService;
 import mizdooni.response.Response;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import static mizdooni.controllers.ControllerUtils.*;
 import static mizdooni.utils.CreateSample.*;
@@ -27,10 +21,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.*;
@@ -63,7 +53,7 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void getUser_NoUser_ThrowsException() {
+    public void getUser_NoCurrentUser_ThrowsException() {
         when(userService.getCurrentUser()).thenReturn(null);
 
         ResponseException result = assertThrows(ResponseException.class, () -> {
@@ -75,7 +65,7 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void login_ValidArgs_ReturnsOkResponse() {
+    public void login_ValidParameters_ReturnsOkResponse() {
         User user = createSampleUser();
         Map<String, String> params = Map.of("username", createSampleNonBlankString(),
                                             "password", createSampleNonBlankString());
@@ -90,7 +80,7 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void login_ParamsMissing_ThrowsException() {
+    public void login_UsernameMissing_ThrowsException() {
         Map<String, String> params = Map.of("password", createSampleNonBlankString());
 
         ResponseException result = assertThrows(ResponseException.class, () -> {
@@ -102,7 +92,19 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void login_InvalidParams_ThrowsException() {
+    public void login_PasswordMissing_ThrowsException() {
+        Map<String, String> params = Map.of("username", createSampleNonBlankString());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.login(params);
+        });
+
+        ResponseException expected = new ResponseException(HttpStatus.BAD_REQUEST, PARAMS_MISSING);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void login_UnauthorizedUser_ThrowsException() {
         Map<String, String> params = Map.of("password", createSampleNonBlankString(),
                                             "username", createSampleNonBlankString());
 
@@ -117,7 +119,7 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void signup_ValidArgs_CallsMethodOfUserServiceCorrectly() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
+    public void signup_ValidParameters_CallsMethodsOfUserServiceCorrectly() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
         Map<String, String> mapAddress = createSampleMapAddress();
         String password = createSamplePassword();
         String username = createSampleUsername();
@@ -144,17 +146,12 @@ public class AuthenticationControllerTest {
     }
 
     @Test
-    public void signup_ValidArgs_ReturnsOkResponse() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
-        Map<String, String> mapAddress = createSampleMapAddress();
-        String password = createSamplePassword();
-        String username = createSampleUsername();
-        String email = createSampleEmail();
-        String role = createSampleRole();
-        Map<String, Object> params = Map.of("username", username,
-                "password", password,
-                "email", email,
-                "address", mapAddress,
-                "role", role);
+    public void signup_ValidParameters_ReturnsOkResponse() {
+        Map<String, Object> params = Map.of("username",  createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role",  createSampleRole());
 
         User user = createSampleUser();
         when(userService.getCurrentUser()).thenReturn(user);
@@ -163,6 +160,319 @@ public class AuthenticationControllerTest {
 
         Response expected = Response.ok("signup successful", user);
         assertEquals(expected, result);
+    }
+
+    @Test
+    public void signup_UsernameMissing_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role",  createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_PasswordMissing_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role",  createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_EmailMissing_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "address", createSampleMapAddress(),
+                "role",  createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_AddressMissing_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "role",  createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_RoleMissing_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_BadTypeUsername_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSamplePositiveNumber(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, result.getMessage());
+    }
+
+    @Test
+    public void signup_BadTypePassword_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUser(),
+                "password", createSamplePositiveNumber(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, result.getMessage());
+    }
+
+    @Test
+    public void signup_BadTypeEmail_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSamplePositiveNumber(),
+                "address", createSampleMapAddress(),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, result.getMessage());
+    }
+
+    @Test
+    public void signup_BadTypeAddress_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", createSamplePositiveNumber(),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, result.getMessage());
+    }
+
+    @Test
+    public void signup_BadTypeRole_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role", createSamplePositiveNumber());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, result.getMessage());
+    }
+
+    @Test
+    public void signup_BlankUsername_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleBlankString(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_BlankPassword_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSampleBlankString(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_BlankEmail_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleBlankString(),
+                "address", createSampleMapAddress(),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_BlankCountry_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", Map.of(
+                        "country", createSampleBlankString(),
+                        "city", createSampleNonBlankString(),
+                        "street", createSampleNonBlankString()),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_BlankCity_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", Map.of(
+                        "country", createSampleNonBlankString(),
+                        "city", createSampleBlankString(),
+                        "street", createSampleNonBlankString()),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_BlankStreet_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", Map.of(
+                        "country", createSampleNonBlankString(),
+                        "city", createSampleNonBlankString(),
+                        "street", createSampleBlankString()),
+                "role", createSampleRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_MISSING, result.getMessage());
+    }
+
+    @Test
+    public void signup_NotExistedRole_ThrowsException() {
+        Map<String, Object> params = Map.of(
+                "username", createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role", createSampleNotExistedRole());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(PARAMS_BAD_TYPE, result.getMessage());
+    }
+
+    @Test
+    public void signup_UserServiceThrowsException_ThrowsException() throws DuplicatedUsernameEmail, InvalidUsernameFormat, InvalidEmailFormat {
+        Map<String, Object> params = Map.of("username",  createSampleUsername(),
+                "password", createSamplePassword(),
+                "email", createSampleEmail(),
+                "address", createSampleMapAddress(),
+                "role",  createSampleRole());
+
+        DuplicatedUsernameEmail exception = createSampleDuplicatedUsernameEmailException();
+        doThrow(exception).when(userService).signup(any(), any(), any(), any(), any());
+
+        ResponseException result = assertThrows(ResponseException.class, () -> {
+            authenticationController.signup(params);
+        });
+
+        assertEquals(HttpStatus.BAD_REQUEST, result.getStatus());
+        assertEquals(exception.getMessage(), result.getMessage());
+        assertEquals(exception.getClass().getSimpleName(), result.getError());
     }
 
     @Test
