@@ -165,5 +165,5 @@ public class ReviewControllerTest {
         ResponseException expected = new ResponseException(HttpStatus.BAD_REQUEST, exception);
         assertEquals(expected, result);
     }
-    
+
 }
