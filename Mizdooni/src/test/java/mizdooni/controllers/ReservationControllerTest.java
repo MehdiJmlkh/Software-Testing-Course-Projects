@@ -45,7 +45,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void getRestaurantReservations_ValidArgs_ReturnsOkResponse() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
+    public void getRestaurantReservations_ValidParameters_ReturnsOkResponse() throws UserNotManager, TableNotFound, InvalidManagerRestaurant, RestaurantNotFound {
         int table = createSampleTableNumber();
         String date = createSampleDate();
         Restaurant restaurant = createSampleRestaurant();
@@ -103,7 +103,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void getCustomerReservations_ValidArgs_ReturnsOkResponse() throws UserNotFound, UserNoAccess {
+    public void getCustomerReservations_ValidParameters_ReturnsOkResponse() throws UserNotFound, UserNoAccess {
         int customerId = createSampleId();
         List<Reservation> reservations = createSampleListOfReservation();
         when(reserveService.getCustomerReservations(customerId)).thenReturn(reservations);
@@ -131,7 +131,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void getAvailableTimes_ValidArgs_ReturnsOkResponse() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
+    public void getAvailableTimes_ValidParameters_ReturnsOkResponse() throws DateTimeInThePast, RestaurantNotFound, BadPeopleNumber {
         Restaurant restaurant = createSampleRestaurant();
         int people = createSamplePositiveNumber();
         String date = createSampleDate();
@@ -176,7 +176,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void addReservation_ValidArgs_ReturnsOkResponse() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes, ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
+    public void addReservation_ValidParameters_ReturnsOkResponse() throws UserNotFound, DateTimeInThePast, TableNotFound, ReservationNotInOpenTimes, ManagerReservationNotAllowed, RestaurantNotFound, InvalidWorkingTime {
         Restaurant restaurant = createSampleRestaurant();
         int people = createSamplePositiveNumber();
         String datetime = createSampleDatetime();
@@ -274,7 +274,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void cancelReservation_ValidArgs_CallsCancelReservationMethodOfReserveService() throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
+    public void cancelReservation_ValidParameters_CallsCancelReservationMethodOfReserveService() throws ReservationCannotBeCancelled, UserNotFound, ReservationNotFound {
         int reservationNumber = createSamplePositiveNumber();
 
         reservationController.cancelReservation(reservationNumber);
@@ -283,7 +283,7 @@ public class ReservationControllerTest {
     }
 
     @Test
-    public void cancelReservation_ValidArgs_ReturnsOkResponse() {
+    public void cancelReservation_ValidParameters_ReturnsOkResponse() {
         int reservationNumber = createSamplePositiveNumber();
 
         Response result = reservationController.cancelReservation(reservationNumber);
