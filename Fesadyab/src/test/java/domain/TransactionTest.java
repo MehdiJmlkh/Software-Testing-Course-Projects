@@ -20,10 +20,14 @@ public class TransactionTest {
     }
 
     @Test
+    void checkEquality_NotEqualTransaction_ReturnsFalse() {
+        Transaction transaction1 = createSampleTransaction(transaction.getTransactionId() + 1);
+        assertNotEquals(transaction, transaction1);
+    }
+
+    @Test
     void checkEquality_NotTransactionObject_ReturnsFalse() {
         Object object = createSampleObject();
         assertNotEquals(transaction, object);
     }
-
-
 }
