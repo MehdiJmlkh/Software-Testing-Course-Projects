@@ -6,11 +6,15 @@ import mizdooni.exceptions.UserNotFound;
 import mizdooni.exceptions.UserNotManager;
 import mizdooni.model.*;
 import mizdooni.response.PagedList;
+import mizdooni.service.ServiceUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import mizdooni.response.PagedList;
 
 public class CreateSample {
 
@@ -185,4 +189,36 @@ public class CreateSample {
     public static Map<String, String> createSampleTableMap() {
         return Map.of("seatsNumber", "1");
     }
+
+    public static RestaurantSearchFilter createSampleRestaurantSearchFilter() {
+        return new RestaurantSearchFilter();
+    }
+
+    public static List<Restaurant> createSampleListOfRestaurants() {
+        return List.of(createSampleRestaurant());
+    }
+
+    public static  PagedList<Restaurant> createSamplePagedListOfRestaurants(int page) {
+        return new PagedList<>(createSampleListOfRestaurants(), page, 2);
+    }
+
+    public static Map<String, Object> createSampleRestaurantMapping() {
+        return new java.util.HashMap<>(Map.of(
+                "name", "name",
+                "type", "type",
+                "startTime", "23:59",
+                "endTime", "23:59",
+                "description", "description",
+                "address", createSampleMapAddress(),
+                "image", "image-link"));
+    }
+
+    public static String createSampleRestaurantName() {
+        return "SampleRestaurantName";
+    }
+
+    public static Set<String> createSampleSetOfRestaurantTypes() {
+        return Set.of("type1", "type2", "type3");
+    }
+
 }
