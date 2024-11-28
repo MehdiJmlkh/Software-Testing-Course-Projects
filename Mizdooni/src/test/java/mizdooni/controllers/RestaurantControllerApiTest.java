@@ -394,7 +394,7 @@ public class RestaurantControllerApiTest {
     }
 
     @Test
-    void getRestaurantLocationsApi__() throws Exception {
+    void getRestaurantLocationsApi_ValidArgs_ReturnsOkResponse() throws Exception {
         Map<String, Set<String>> locations = Map.of(
                 "location1", Set.of("city1", "street1"),
                 "location2", Set.of("city2", "street2"));;
