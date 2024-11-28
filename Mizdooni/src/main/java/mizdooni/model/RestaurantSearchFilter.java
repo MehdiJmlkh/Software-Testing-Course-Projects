@@ -60,4 +60,24 @@ public class RestaurantSearchFilter {
     public void setOrder(String order) {
         this.order = order;
     }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public String getLocation() {
+        return this.location;
+    }
+
+    public String getSort() {
+        return this.sort;
+    }
+
+    public String getOrder() {
+        return this.order;
+    }
 }
