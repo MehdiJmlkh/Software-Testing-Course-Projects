@@ -176,4 +176,13 @@ public class CreateSample {
     public static DuplicatedUsernameEmail createSampleDuplicatedUsernameEmailException() {
         return new DuplicatedUsernameEmail();
     }
+
+    public static List<Table> createSampleListOfTables() {
+        return List.of(createSampleTable(1),
+                        createSampleTable(2));
+    }
+
+    public static Map<String, String> createSampleTableMap() {
+        return Map.of("seatsNumber", "1");
+    }
 }
