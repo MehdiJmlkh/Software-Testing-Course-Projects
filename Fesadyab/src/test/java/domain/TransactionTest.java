@@ -30,4 +30,18 @@ public class TransactionTest {
         Object object = createSampleObject();
         assertNotEquals(transaction, object);
     }
+
+    // Just to get 100% line coverage in PIT
+    @Test
+    void settersAndGetters_work() {
+        transaction.setTransactionId(1);
+        transaction.setAmount(2);
+        transaction.setAccountId(3);
+        transaction.setDebit(false);
+
+        assertEquals(1, transaction.getTransactionId());
+        assertEquals(2, transaction.getAmount());
+        assertEquals(3, transaction.getAccountId());
+        assertFalse(transaction.isDebit());
+    }
 }
