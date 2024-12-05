@@ -69,6 +69,21 @@ public class TransactionEngineTest {
     }
 
     @Test
+    void getTransactionPatternAboveThreshold_ThreeElementHavePattern_ReturnsPattern() {
+        List<Transaction> transactions = List.of(
+                createSampleTransaction(1, 1, 5),
+                createSampleTransaction(2, 1, 15),
+                createSampleTransaction(3, 1, 25),
+                createSampleTransaction(4, 1, 25)
+        );
+        transactionEngine.transactionHistory.addAll(transactions);
+
+        int result = transactionEngine.getTransactionPatternAboveThreshold(0);
+
+        assertEquals(10, result);
+    }
+
+    @Test
     void getTransactionPatternAboveThreshold_WithoutPattern_ReturnsZero() {
         List<Transaction> transactions = List.of(
                 createSampleTransaction(1, 1, 5),
@@ -84,7 +99,7 @@ public class TransactionEngineTest {
     }
 
     @Test
-    void detectFraudulentTransaction_SuspiciousTransaction_ReturnsFraudScore() {
+    void detectFraudulentTransaction_AmountIsGreaterThanTwiceAverage_ReturnsExtraAmount() {
         Transaction transaction = createSampleTransaction(30, true);
         TransactionEngine transactionEngineStub = spy(TransactionEngine.class);
         when(transactionEngineStub.getAverageTransactionAmountByAccount(transaction.getAccountId()))
@@ -97,7 +112,7 @@ public class TransactionEngineTest {
 
     @Test
     void detectFraudulentTransaction_NotDebitTransaction_ReturnsZero() {
-        Transaction transaction = createSampleTransaction(30, false);
+        Transaction transaction = createSampleTransaction(29, false);
         TransactionEngine transactionEngineStub = spy(TransactionEngine.class);
         when(transactionEngineStub.getAverageTransactionAmountByAccount(transaction.getAccountId()))
                 .thenReturn(10);
