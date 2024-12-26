@@ -28,6 +28,12 @@ public class CreateSample {
                 User.Role.client);
     }
 
+    public static User createSampleUser(String username) {
+        Address address = createSampleAddress();
+        return new User(username, "password", "email@mail.com", address,
+                User.Role.client);
+    }
+
     public static User createSampleManager() {
         Address address = createSampleAddress();
         return new User("username", "password", "email@mail.com", address,
@@ -51,6 +57,17 @@ public class CreateSample {
 
     public static Rating createSampleRating() {
         return new Rating();
+    }
+
+    public static Rating createSampleRating(int overall) {
+        Rating rating = new Rating();
+        rating.overall = overall;
+        return  rating;
+    }
+
+    public static Review createSampleReview(User user, String comment, int overallRating) {
+        Rating rating = createSampleRating(overallRating);
+        return new Review(user, rating, comment, LocalDateTime.now());
     }
 
     public static Review createSampleReview(User user) {
