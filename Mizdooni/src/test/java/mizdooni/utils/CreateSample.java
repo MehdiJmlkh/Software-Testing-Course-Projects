@@ -65,6 +65,15 @@ public class CreateSample {
         return  rating;
     }
 
+    public static Rating createSampleRating(int food, int service, int ambiance, int overall) {
+        Rating rating = new Rating();
+        rating.food = food;
+        rating.service = service;
+        rating.ambiance = ambiance;
+        rating.overall = overall;
+        return  rating;
+    }
+
     public static Review createSampleReview(User user, String comment, int overallRating) {
         Rating rating = createSampleRating(overallRating);
         return new Review(user, rating, comment, LocalDateTime.now());
