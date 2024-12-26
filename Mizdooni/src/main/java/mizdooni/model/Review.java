@@ -19,6 +19,8 @@ public class Review {
         return rating;
     }
 
+    public String getComment() {return comment;}
+
     public int getStarCount() {
         return rating.getStarCount();
     }
